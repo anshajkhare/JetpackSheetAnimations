@@ -3,6 +3,10 @@ package `in`.slanglabs.demo.sheet.animations
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -58,8 +62,20 @@ fun BottomSheetDemo() {
                         showBottomSheet = false
                     }) // Close sheet on outside click
             )
-            BottomSheetContent()
         }
+        BottomSheetSlideIn(showBottomSheet)
+    }
+}
+
+@Composable
+fun BottomSheetSlideIn(isVisible: Boolean) {
+    val slideDurationMs = 500
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(initialOffsetY = { it }, animationSpec = tween(slideDurationMs)),
+        exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(slideDurationMs))
+    ) {
+        BottomSheetContent()
     }
 }
 

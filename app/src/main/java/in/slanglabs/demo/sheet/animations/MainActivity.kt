@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -42,10 +43,10 @@ fun BottomSheetDemo() {
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
         Button(
-            onClick = { showBottomSheet = !showBottomSheet },
+            onClick = { showBottomSheet = true },
             modifier = Modifier.align(Alignment.Center)
         ) {
-            Text(if (showBottomSheet) "Hide" else "Open Bottom Sheet")
+            Text("Open Bottom Sheet")
         }
 
         if (showBottomSheet) {
@@ -53,15 +54,17 @@ fun BottomSheetDemo() {
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.3f)) // Semi-transparent grey
-                    .clickable(onClick = { showBottomSheet = false }) // Close sheet on outside click
+                    .clickable(onClick = {
+                        showBottomSheet = false
+                    }) // Close sheet on outside click
             )
-            BottomSheet()
+            BottomSheetContent()
         }
     }
 }
 
 @Composable
-fun BottomSheet() {
+fun BottomSheetContent() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -71,6 +74,7 @@ fun BottomSheet() {
             )
             .height(300.dp)
             .padding(16.dp)
+            .pointerInput(Unit) {}
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             // Tab on top of the Bottom Sheet

@@ -13,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,27 +47,49 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun BottomSheetDemo() {
+    var animationType by remember {
+        mutableStateOf(AnimationType.SLIDE)
+    }
     var showBottomSheet by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+        Column(modifier = Modifier.align(Alignment.Center).padding(top = 120.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = animationType == AnimationType.SLIDE,
+                    onClick = { animationType = AnimationType.SLIDE }
+                )
+                Text("Slide")
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = animationType == AnimationType.BOUNCE,
+                    onClick = { animationType = AnimationType.BOUNCE }
+                )
+                Text("Bounce")
+            }
+        }
+
         Button(
             onClick = { showBottomSheet = true },
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.align(Alignment.Center).padding(bottom = 120.dp)
         ) {
             Text("Open Bottom Sheet")
         }
-
-        if (showBottomSheet) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f)) // Semi-transparent grey
-                    .clickable(onClick = {
-                        showBottomSheet = false
-                    }) // Close sheet on outside click
-            )
-        }
-        BottomSheetSlideIn(showBottomSheet)
+            if (showBottomSheet) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.3f)) // Semi-transparent grey
+                        .clickable(onClick = {
+                            showBottomSheet = false
+                        }) // Close sheet on outside click
+                )
+            }
+            when (animationType) {
+                AnimationType.SLIDE -> BottomSheetSlideIn(showBottomSheet)
+                AnimationType.BOUNCE -> BottomSheetSlideWithBounce(showBottomSheet)
+            }
     }
 }
 
@@ -130,4 +154,8 @@ fun BottomSheetContent() {
             )
         }
     }
+}
+
+private enum class AnimationType {
+    SLIDE, BOUNCE
 }

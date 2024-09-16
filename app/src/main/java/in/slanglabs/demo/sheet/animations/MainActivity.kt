@@ -47,6 +47,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+private const val SLIDE_DURATION_MS = 500;
+private const val FADE_DURATION_MS = 300;
+
 @Composable
 fun BottomSheetDemo() {
     var animationType by remember {
@@ -55,9 +58,11 @@ fun BottomSheetDemo() {
     var showBottomSheet by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-        Column(modifier = Modifier
-            .align(Alignment.Center)
-            .padding(top = 120.dp)) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(top = 120.dp)
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = animationType == AnimationType.SLIDE,
@@ -79,6 +84,13 @@ fun BottomSheetDemo() {
                 )
                 Text("Fade")
             }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = animationType == AnimationType.FADE_SLIDE,
+                    onClick = { animationType = AnimationType.FADE_SLIDE }
+                )
+                Text("Fade and Slide")
+            }
         }
 
         Button(
@@ -89,31 +101,34 @@ fun BottomSheetDemo() {
         ) {
             Text("Open Bottom Sheet")
         }
-            if (showBottomSheet) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.3f)) // Semi-transparent grey
-                        .clickable(onClick = {
-                            showBottomSheet = false
-                        }) // Close sheet on outside click
-                )
-            }
-            when (animationType) {
-                AnimationType.SLIDE -> BottomSheetSlideIn(showBottomSheet)
-                AnimationType.BOUNCE -> BottomSheetSlideWithBounce(showBottomSheet)
-                AnimationType.FADE -> BottomSheetFadeIn(showBottomSheet)
-            }
+        if (showBottomSheet) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.3f)) // Semi-transparent grey
+                    .clickable(onClick = {
+                        showBottomSheet = false
+                    }) // Close sheet on outside click
+            )
+        }
+        when (animationType) {
+            AnimationType.SLIDE -> BottomSheetSlideIn(showBottomSheet)
+            AnimationType.BOUNCE -> BottomSheetSlideWithBounce(showBottomSheet)
+            AnimationType.FADE -> BottomSheetFadeIn(showBottomSheet)
+            AnimationType.FADE_SLIDE -> BottomSheetFadeAndSlide(showBottomSheet)
+        }
     }
 }
 
 @Composable
 fun BottomSheetSlideIn(isVisible: Boolean) {
-    val slideDurationMs = 500
     AnimatedVisibility(
         visible = isVisible,
-        enter = slideInVertically(initialOffsetY = { it }, animationSpec = tween(slideDurationMs)),
-        exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(slideDurationMs))
+        enter = slideInVertically(
+            initialOffsetY = { it },
+            animationSpec = tween(SLIDE_DURATION_MS)
+        ),
+        exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(SLIDE_DURATION_MS))
     ) {
         BottomSheetContent()
     }
@@ -121,14 +136,18 @@ fun BottomSheetSlideIn(isVisible: Boolean) {
 
 @Composable
 fun BottomSheetSlideWithBounce(isVisible: Boolean) {
-    val slideDurationMs = 500
     AnimatedVisibility(
         visible = isVisible,
-        enter = slideInVertically(initialOffsetY = { it }, animationSpec = spring(
-            dampingRatio = Spring.DampingRatioLowBouncy,
-            stiffness = Spring.StiffnessLow
-        )), // Slide in with bounce
-        exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(slideDurationMs))   // Slide out with bounce
+        enter = slideInVertically(
+            initialOffsetY = { it }, animationSpec = spring(
+                dampingRatio = Spring.DampingRatioLowBouncy,
+                stiffness = Spring.StiffnessLow
+            )
+        ), // Slide in with bounce
+        exit = slideOutVertically(
+            targetOffsetY = { it },
+            animationSpec = tween(SLIDE_DURATION_MS)
+        )   // Slide out with bounce
     ) {
         BottomSheetContent()
     }
@@ -138,8 +157,28 @@ fun BottomSheetSlideWithBounce(isVisible: Boolean) {
 fun BottomSheetFadeIn(isVisible: Boolean) {
     AnimatedVisibility(
         visible = isVisible,
-        enter = fadeIn(animationSpec = tween(300)),
-        exit = fadeOut(animationSpec = tween(300))
+        enter = slideInVertically(
+            initialOffsetY = { it },
+            animationSpec = tween(SLIDE_DURATION_MS)
+        ) + fadeIn(animationSpec = tween(FADE_DURATION_MS)),
+        exit = fadeOut(animationSpec = tween(FADE_DURATION_MS))
+    ) {
+        BottomSheetContent()
+    }
+}
+
+@Composable
+fun BottomSheetFadeAndSlide(isVisible: Boolean) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(
+            initialOffsetY = { it },
+            animationSpec = tween(SLIDE_DURATION_MS)
+        ) + fadeIn(animationSpec = tween(FADE_DURATION_MS)),
+        exit = slideOutVertically(
+            targetOffsetY = { it },
+            animationSpec = tween(SLIDE_DURATION_MS)
+        ) + fadeOut(animationSpec = tween(FADE_DURATION_MS))
     ) {
         BottomSheetContent()
     }
@@ -182,5 +221,5 @@ fun BottomSheetContent() {
 }
 
 private enum class AnimationType {
-    SLIDE, BOUNCE, FADE
+    SLIDE, BOUNCE, FADE, FADE_SLIDE
 }

@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -74,6 +76,21 @@ fun BottomSheetSlideIn(isVisible: Boolean) {
         visible = isVisible,
         enter = slideInVertically(initialOffsetY = { it }, animationSpec = tween(slideDurationMs)),
         exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(slideDurationMs))
+    ) {
+        BottomSheetContent()
+    }
+}
+
+@Composable
+fun BottomSheetSlideWithBounce(isVisible: Boolean) {
+    val slideDurationMs = 500
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(initialOffsetY = { it }, animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessLow
+        )), // Slide in with bounce
+        exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(slideDurationMs))   // Slide out with bounce
     ) {
         BottomSheetContent()
     }

@@ -157,10 +157,7 @@ fun BottomSheetSlideWithBounce(isVisible: Boolean) {
 fun BottomSheetFadeIn(isVisible: Boolean) {
     AnimatedVisibility(
         visible = isVisible,
-        enter = slideInVertically(
-            initialOffsetY = { it },
-            animationSpec = tween(SLIDE_DURATION_MS)
-        ) + fadeIn(animationSpec = tween(FADE_DURATION_MS)),
+        enter = fadeIn(animationSpec = tween(FADE_DURATION_MS)),
         exit = fadeOut(animationSpec = tween(FADE_DURATION_MS))
     ) {
         BottomSheetContent()
